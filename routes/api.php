@@ -3,10 +3,16 @@
 use Illuminate\Http\Request;
 use App\Http\Middleware\VerifRole;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ImcController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\UserController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\RegimeController;
+use App\Http\Controllers\UtiregController;
+use App\Http\Controllers\UtiactController;
+use App\Http\Controllers\AvatarController;
 use App\Http\Controllers\ActivityController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -65,5 +71,27 @@ Route::group(['middleware' => ['auth:api', 'role:admin']], function () {
     //supprimer un utilisateur  (réservé aux administrateurs)
     Route::delete('users/{id}', [AdminController::class ,'deleteUser']);
 
+    //recupérer tous les utilisateurs  (réservé aux administrateurs)
+    Route::get('/users', [UserController::class ,'index']);
+
+    //recupérer les utilisateurs avec l'id (réservé aux administrateurs)
+    Route::get('/users/{user_id}/get-user-data', [UserController::class, 'getUserData']);
+
 });
 
+
+Route::group(['middleware' => ['auth:api']], function () {
+
+    // Calculate IMC
+    Route::post('imc', [ImcController::class, 'calculateIMC']);
+
+    // Check regime compatibility
+    Route::get('/users/{user_id}/get-regime-by-imc/{imc_id}', [UtiregController::class, 'getRegimeByIMC']);
+
+    // Check activity compatibility
+    Route::get('/users/{user_id}/imc/{imc_id}/compatible-activities', [UtiactController::class, 'getActivitiesByIMC']);
+
+    // Changer l'avatar ou le modifier
+    Route::post('/update-avatar', [AvatarController::class , 'updateAvatar']);
+
+});
