@@ -13,6 +13,6 @@ class Activity extends Model
 
     public function users()
     {
-        return $this->belongsToMany(User::class, 'utilisateur_act');
+        return $this->hasMany(User::class);
     }
 }

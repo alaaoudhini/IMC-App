@@ -5,6 +5,9 @@ namespace App\Providers;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Gate;
 use App\Models\Imc;
+use App\Models\User;
+use App\Models\Regime;
+use App\Models\Activity;
 use App\Policies\ImcPolicy;
 
 class AuthServiceProvider extends ServiceProvider
@@ -17,6 +20,9 @@ class AuthServiceProvider extends ServiceProvider
     protected $policies = [
         // 'App\Models\Model' => 'App\Policies\ModelPolicy',
         Imc::class => ImcPolicy::class,
+        User::class => UserPolicy::class,
+        Activity::class => ActivityPolicy::class,
+        Regime::class => RegimePolicy::class,
     ];
 
     /**

@@ -26,9 +26,6 @@ class User extends Authenticatable
         'role',
         'date_of_birth',
         'avatar',
-        'imc_id',
-        'activity_id',
-        'regime_id',
     ];
 
     /**
@@ -50,14 +47,27 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
+    protected $guard = 'admin';
+
+    // For admin users
+    public function isAdmin()
+    {
+    return $this->role === 'admin';
+    }
+
+    public function getRoleAttribute($value)
+    {
+    return strtolower($value);
+    } 
+
     public function activities()
     {
-        return $this->belongsToMany(Activity::class, 'utilisateur_act');
+        return $this->hasMany(Activity::class);
     }
 
     public function regimes()
     {
-        return $this->belongsToMany(Regime::class, 'utilisateur_reg');
+        return $this->hasMany(Regime::class);
     }
 
     public function imc()
@@ -65,7 +75,10 @@ class User extends Authenticatable
         return $this->hasOne(Imc::class);
     }
 
-    public function getCompatibleRegimeByIMC($imcValue)
+    
+
+
+    /*public function getCompatibleRegimeByIMC($imcValue)
     {
     $userIMC = $this->imc->imc; // Assuming you have a one-to-one relationship with the IMC model
     
@@ -75,9 +88,9 @@ class User extends Authenticatable
         ->first();
 
     return $compatibleRegime;
-    }
+    }*/
 
-    public function getCompatibleActivitiesByIMC($imcValue)
+    /*public function getCompatibleActivitiesByIMC($imcValue)
     {
     // Get the user's IMC value from the related Imc model
     $userIMC = $this->imc->imc;
@@ -88,6 +101,6 @@ class User extends Authenticatable
         ->get();
 
     return $compatibleActivities;
-}
+}*/
 
 }

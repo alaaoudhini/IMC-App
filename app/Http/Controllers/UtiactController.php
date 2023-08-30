@@ -18,18 +18,35 @@ class UtiactController extends Controller
         $this->imcController = $imcController;
     }
 
-    public function getActivitiesByIMC($user_id, $imc_id)
-    { 
-    $user = User::findOrFail($user_id);
-    $imc = Imc::findOrFail($imc_id)->imc;
+    public function getUserImcAndCompatibleActivities($userId, $imcId)
+{
+    $user = User::findOrFail($userId);
 
-    $compatibleActivities = $user->getCompatibleActivitiesByIMC($imc);
+    // Ensure the IMC value belongs to the user
+    $imcData = Imc::where('user_id', $userId)->findOrFail($imcId);
+    $imc = $imcData->imc;
 
-    if ($compatibleActivities->isEmpty()) {
-        return response()->json(['message' => 'No compatible activities found for the given IMC'], 404);
+    if (!$imc) {
+        return response()->json(['message' => 'IMC not found for this user.'], 404);
     }
 
-    return response()->json(['activities' => $compatibleActivities]);
+    // Retrieve a compatible activity based on the IMC range
+    $compatibleActivity = Activity::where('min_imc', '<=', $imc)
+        ->where('max_imc', '>=', $imc)
+        ->first();
+
+    if (!$compatibleActivity) {
+        return response()->json(['message' => 'No compatible activity found for the given IMC'], 404);
     }
+
+    return response()->json([
+        'imc_id' => $imcData->id,
+        'imc' => $imc,
+        'user' => $user->id,
+        'activity' => $compatibleActivity  
+    ]);
+}
+
+
 
 }

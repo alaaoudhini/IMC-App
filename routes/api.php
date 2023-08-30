@@ -25,12 +25,39 @@ use App\Http\Controllers\ActivityController;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+/*Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
-});
+});*/
 
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
+
+// with policies 
+/*Route::group(['middleware' => ['auth:api', 'role:admin']], function () {
+    
+    // Permissions for viewing any model
+    Route::get('activities', [ActivityController::class, 'index'])->middleware('can:viewAny,' . Activity::class);
+    Route::get('activities/{id}', [ActivityController::class, 'show']);
+    Route::get('regimes', [RegimeController::class, 'index'])->middleware('can:viewAny,' . Regime::class);
+    Route::get('regimes/{id}', [RegimeController::class, 'show']);
+
+    // Permissions for editing any model
+    Route::post('activities', [ActivityController::class, 'store'])->middleware('can:edit,' . Activity::class);
+    Route::put('activities/{id}', [ActivityController::class, 'update'])->middleware('can:edit,' . Activity::class);
+    Route::post('regimes', [RegimeController::class, 'store'])->middleware('can:edit,' . Regime::class);
+    Route::put('regimes/{id}', [RegimeController::class, 'update'])->middleware('can:edit,' . Regime::class);
+
+    // Other admin-only routes
+    Route::delete('activities/{id}', [ActivityController::class, 'destroy'])->middleware('can:delete,' . Activity::class);
+    Route::delete('regimes/{id}', [RegimeController::class, 'destroy'])->middleware('can:delete,' . Regime::class);
+    
+    Route::post('users', [AdminController::class, 'addUser'])->middleware('can:addUser,' . User::class);
+    Route::put('users/{id}', [AdminController::class, 'updateUser'])->middleware('can:updateUser,' . User::class);
+    Route::delete('users/{id}', [AdminController::class, 'deleteUser'])->middleware('can:deleteUser,' . User::class);
+    Route::get('/users', [AdminController::class, 'getAllUsers']);
+    
+    Route::get('/user/{userId}/count-activities-regimes', [AdminController::class, 'countActivitiesAndRegimes']);
+});*/
 
 Route::group(['middleware' => ['auth:api', 'role:admin']], function () {
 
@@ -70,28 +97,37 @@ Route::group(['middleware' => ['auth:api', 'role:admin']], function () {
 
     //supprimer un utilisateur  (réservé aux administrateurs)
     Route::delete('users/{id}', [AdminController::class ,'deleteUser']);
+    
+    //afficher tous les utilisateurs
+    Route::get('/users', [AdminController::class ,'getAllUsers']);
 
-    //recupérer tous les utilisateurs  (réservé aux administrateurs)
-    Route::get('/users', [UserController::class ,'index']);
-
-    //recupérer les utilisateurs avec l'id (réservé aux administrateurs)
-    Route::get('/users/{user_id}/get-user-data', [UserController::class, 'getUserData']);
+    //nombre d'activité et regime
+    Route::get('/user/{userId}/count-activities-regimes', [AdminController::class , 'countActivitiesAndRegimes']);
 
 });
-
 
 Route::group(['middleware' => ['auth:api']], function () {
 
     // Calculate IMC
-    Route::post('imc', [ImcController::class, 'calculateIMC']);
+    Route::post('/calculate-imc', [ImcController::class, 'calculateIMC']);
 
     // Check regime compatibility
-    Route::get('/users/{user_id}/get-regime-by-imc/{imc_id}', [UtiregController::class, 'getRegimeByIMC']);
+    Route::get('/user/{userId}/imc/{imcId}/regime', [UtiregController::class, 'getUserImcAndCompatibleRegime']);
 
     // Check activity compatibility
-    Route::get('/users/{user_id}/imc/{imc_id}/compatible-activities', [UtiactController::class, 'getActivitiesByIMC']);
+    Route::get('user/{userId}/imc/{imcId}/activities', [UtiactController::class, 'getUserImcAndCompatibleActivities']);
+
 
     // Changer l'avatar ou le modifier
-    Route::post('/update-avatar', [AvatarController::class , 'updateAvatar']);
+    Route::post('/user/upload-avatar', [AvatarController::class , 'uploadAvatar']);
+
+    // recupérer l'avatar
+    Route::get('user/get-avatar/{userId}', [AvatarController::class , 'getAvatar']);
+
+    // recupérer l'imc de chaque utilisateur avec l'id
+    //Route::get('/user/{userId}/imc',[UserController::class ,'getUserImc'] );
+
+    // recupérer l'id de chaque utilisateur avec l'id de son imc
+    Route::get('/get-user-id', [UserController::class ,'getUserId'] );
 
 });

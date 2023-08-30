@@ -23,13 +23,18 @@ class AuthController extends Controller
             $user = Auth::user();
             $token = $user->createToken('authToken')->accessToken;
     
-            return response()->json(['message' => 'Authentication successful', 'user' => $user, 'token' => $token]);
+            return response()->json([
+                'message' => 'Authentication successful',
+                'user' => $user,
+                'token' => $token,
+            ]);
         } 
         else
         {
             return response()->json(['error' => 'Invalid email or password'], 401);
         }
     }
+    
     
 
     private function hasNullValues($test)
@@ -48,6 +53,7 @@ class AuthController extends Controller
         'name' => 'required|string|max:255',
         'email' => 'required|email|unique:users|max:255',
         'password' => 'required|string|min:8',
+        'date_of_birth' => 'required|date',
     ]);
 
     // Create a new User instance
@@ -55,6 +61,8 @@ class AuthController extends Controller
     $user->name = $request->input('name');
     $user->email = $request->input('email');
     $user->password = bcrypt($request->input('password'));
+    $user->date_of_birth = $request->input('date_of_birth');
+
 
     // Assign the 'user' role by default
     //$user->role = 'user';

@@ -3,39 +3,63 @@
 namespace App\Http\Controllers;
 use App\Models\User;
 use App\Models\Imc;
-use App\Models\Regime;
-use App\Models\Activity;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\ImcController;
+
 
 class UserController extends Controller
 {
 
-    public function index()
+
+    public function getUserId()
     {
-    if (auth()->user()->role !== 'admin') {
-        return response()->json(['message' => 'Unauthorized'], 403);
-    }
-
-    $users = User::all();
-
-    return response()->json(['users' => $users]);
-    }
-
-
-    public function getUserData($user_id)
-    {
-        $user = User::with('regimes', 'activities', 'imc')->findOrFail($user_id);
+        $userId = Auth::id(); // This will give you the ID of the currently authenticated user
+        
+        // Fetch the user's associated IMC value
+        $imc = Imc::where('user_id', $userId)->first();
     
-        $regime_id = $user->regimes->pluck('id');
-        $activity_id = $user->activities->pluck('id');
-        $imc_id = $user->imc->pluck('id'); 
+        if ($imc) {
+            $imcValue = $imc->imc;
+            $imcId = $imc->id;
+        } else {
+            $imcValue = null; // Handle the case when IMC value is not found
+            $imcId = null;
+            return response()->json(['message' => 'IMC not found for this user.'], 404);
+        }
+        
+        // Fetch the user's avatar path
+        $user = User::find($userId);
+        $avatarPath = $user->avatar;
     
         return response()->json([
-            'regime_id' => $regime_id,
-            'activity_id' => $activity_id,
-            'imc_id' => $imc_id,
+            'user_id' => $userId,
+            'imc_id' => $imcId,
+            'imc' => $imcValue,
+            'avatar_path' => $avatarPath, // Include the avatar path
         ]);
     }
-    
-    
+}    
+
+/*protected $imcController;
+
+public function __construct(ImcController $imcController)
+{
+    $this->imcController = $imcController;
 }
+
+
+ public function getUserImc($userId)
+    {
+        $user = User::findOrFail($userId);
+        $imc = $user->imc;
+    
+        if (!$imc) {
+            return response()->json(['message' => 'IMC not found for this user.'], 404);
+        }
+    
+        return response()->json([
+            'imc_id' => $imc->id, // Add this line to fetch the IMC ID
+            'imc' => $imc->imc
+        ]);
+    }*/
