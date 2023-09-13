@@ -20,10 +20,14 @@ class AdminSeeder extends Seeder
         User::create([
             'name' => 'Admin',
             'email' => 'user_admin@gmail.com',
-            'password' => Hash::make('user_admin'), // You can change this password
+            'password' => Hash::make('password'), // You can change this password
             'date_of_birth' => '1999-02-14',
             'avatar' => null, // Nullable avatar
-            'role' => 'admin', // Assuming you have a 'role' field in the User model
+            'role' => 'admin',
+            'regime_id'=>null,
+            'activity_id'=>null,
+            'imc_id'=>null,
+            // Assuming you have a 'role' field in the User model
         ]);
     }
 }

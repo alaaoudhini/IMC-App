@@ -32,8 +32,8 @@ class UtiactController extends Controller
 
     // Retrieve a compatible activity based on the IMC range
     $compatibleActivity = Activity::where('min_imc', '<=', $imc)
-        ->where('max_imc', '>=', $imc)
-        ->first();
+    ->where('max_imc', '>=', $imc)
+    ->get();
 
     if (!$compatibleActivity) {
         return response()->json(['message' => 'No compatible activity found for the given IMC'], 404);

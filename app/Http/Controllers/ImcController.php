@@ -22,13 +22,17 @@ class ImcController extends Controller
             return ['error' => 'Invalid height value'];
         }
 
-        $imc = $weight / ($height * $height);
+        $imc = $weight / (($height/100) * ($height/100));
 
         // Round the IMC to two decimal places
         $imc = round($imc, 2);
-
+        $authuser = Auth::user();
+        $userId= $authuser->id;
+        $user = User::findOrFail($userId);
         // Create the entry in the 'imc' table
-        $imcData = Imc::create([
+        $imcData = Imc::updateOrCreate(
+            ['user_id'=>$userId],
+            [
             'weight' => $weight,
             'height' => $height,
             'imc' => $imc,

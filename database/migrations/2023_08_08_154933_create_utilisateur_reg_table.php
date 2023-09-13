@@ -16,7 +16,7 @@ class CreateUtilisateurRegTable extends Migration
         Schema::create('utilisateur_reg', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
-            $table->foreignId('regime_id')->constrained('regimes')->onDelete('cascade');
+            $table->foreignId('regime_id')->constrained('regimes')->onDelete('cascade')->nullable();
             $table->timestamps();
         });
     }

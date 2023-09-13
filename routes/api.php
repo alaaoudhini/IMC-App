@@ -107,6 +107,7 @@ Route::group(['middleware' => ['auth:api', 'role:admin']], function () {
 });
 
 Route::group(['middleware' => ['auth:api']], function () {
+    Route::get('activities/{id}', [ActivityController::class, 'show']);
 
     // Calculate IMC
     Route::post('/calculate-imc', [ImcController::class, 'calculateIMC']);

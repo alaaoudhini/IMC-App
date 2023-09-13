@@ -14,9 +14,9 @@ class AddForeignKeysToUsersTable extends Migration
     public function up()
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->foreignId('regime_id')->constrained('regimes')->onDelete('cascade');
-            $table->foreignId('activity_id')->constrained('activities')->onDelete('cascade');
-            $table->foreignId('imc_id')->constrained('imcs')->onDelete('cascade');
+            $table->foreignId('regime_id')->nullable()->constrained('regimes')->onDelete('cascade');
+            $table->foreignId('activity_id')->nullable()->constrained('activities')->onDelete('cascade');
+            $table->foreignId('imc_id')->nullable()->constrained('imcs')->onDelete('cascade');
         });
     }
 
